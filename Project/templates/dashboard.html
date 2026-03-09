@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block body_class %}dashboard-bg{% endblock %}
+
+{% block content %}
+<div class="row mb-5 text-center mt-3 animate__animated animate__fadeInDown">
+    <div class="col-md-10 mx-auto">
+        <h1 class="display-4 fw-bold" style="background: -webkit-linear-gradient(45deg, #0f172a, #0088cc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Water Quality Analysis</h1>
+        <p class="lead text-dark">Enter environmental readings to predict water potability</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        
+        {% if prediction %}
+        <div class="glass-panel alert-glass {% if prediction == 'Potable' %}alert-glass-success{% else %}alert-glass-danger{% endif %} text-center mb-5 p-4 animate__animated animate__flipInX">
+            <h2 class="mb-3">
+                {% if prediction == 'Potable' %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-check-circle me-2" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/></svg>
+                {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-exclamation-triangle me-2" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/><path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/></svg>
+                {% endif %}
+                Prediction Result: {{ prediction }}
+            </h2>
+            <p class="mb-0 fs-5 text-dark">
+                A detailed PDF report has been generated and saved to your history.
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="glass-panel animate__animated animate__zoomIn">
+            <h4 class="mb-4 text-center border-bottom pb-3" style="border-color: rgba(0,0,0,0.1) !important;">Input Sensor Data</h4>
+            <div class="card-body p-0">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">pH Level (0-14)</label>
+                            <input type="number" step="0.01" class="form-control form-control-glass" name="ph" placeholder="e.g. 7.1" required />
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Hardness (mg/L)</label>
+                            <input type="number" step="0.01" class="form-control form-control-glass" name="hardness" placeholder="e.g. 200.5" required />
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Solids (ppm)</label>
+                            <input type="number" step="0.01" class="form-control form-control-glass" name="solids" placeholder="e.g. 20000" required />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Chloramines (ppm)</label>
+                            <input type="number" step="0.01" class="form-control form-control-glass" name="chloramines" placeholder="e.g. 7.5" required />
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Sulfate (mg/L)</label>
+                            <input type="number" step="0.01" class="form-control form-control-glass" name="sulfate" placeholder="e.g. 300" required />
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Conductivity (μS/cm)</label>
+                            <input type="number" step="0.01" class="form-control form-control-glass" name="conductivity" placeholder="e.g. 400" required />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Organic Carbon (ppm)</label>
+                            <input type="number" step="0.01" class="form-control form-control-glass" name="organic_carbon" placeholder="e.g. 15" required />
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Trihalomethanes (μg/L)</label>
+                            <input type="number" step="0.01" class="form-control form-control-glass" name="trihalomethanes" placeholder="e.g. 60" required />
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">Turbidity (NTU)</label>
+                            <input type="number" step="0.01" class="form-control form-control-glass" name="turbidity" placeholder="e.g. 4.0" required />
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-glass btn-lg w-50 py-3 rounded-pill text-uppercase shadow-lg" style="letter-spacing: 1px;">
+                            Analyze Water Quality
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
