@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block body_class %}dashboard-bg{% endblock %}
+
+{% block content %}
+<div class="glass-panel p-4 p-md-5 animate__animated animate__fadeInUp">
+    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4" style="border-color: rgba(0,0,0,0.1) !important;">
+        <h2 class="mb-0" style="font-weight: 600; background: -webkit-linear-gradient(45deg, #0f172a, #0088cc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Analysis History</h2>
+    </div>
+
+    <div class="table-responsive mb-4">
+        <table class="table table-borderless table-glass text-center align-middle">
+            <thead class="bg-dark bg-opacity-10 rounded">
+                <tr>
+                    <th class="py-3 rounded-start">Date</th>
+                    <th class="py-3">Result</th>
+                    <th class="py-3">pH</th>
+                    <th class="py-3">TDS</th>
+                    <th class="py-3">Turbidity</th>
+                    <th class="py-3 rounded-end">Report</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reading in readings.items %}
+                <tr class="border-bottom border-dark border-opacity-10">
+                    <td class="py-3 text-start ps-3">{{ reading.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td class="py-3">
+                        <span class="badge rounded-pill px-3 py-2 text-white {% if reading.prediction == 'Potable' %}bg-success{% else %}bg-danger{% endif %}" style="letter-spacing: 0.5px;">
+                            {{ reading.prediction }}
+                        </span>
+                    </td>
+                    <td class="py-3">{{ "%.2f"|format(reading.ph) }}</td>
+                    <td class="py-3">{{ "%.0f"|format(reading.solids) }}</td>
+                    <td class="py-3">{{ "%.2f"|format(reading.turbidity) }}</td>
+                    <td class="py-3 text-end pe-3">
+                        <a href="{{ url_for('main.download_report', reading_id=reading.id) }}" class="btn btn-sm btn-outline-info rounded-pill px-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download me-1" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                            PDF
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-inbox mb-3" viewBox="0 0 16 16"><path d="M4.98 4a.5.5 0 0 0-.39.188L1.54 8H6a.5.5 0 0 1 .5.5 1.5 1.5 0 1 0 3 0A.5.5 0 0 1 10 8h4.46l-3.05-3.812A.5.5 0 0 0 11.02 4H4.98zm-1.17-.437A1.5 1.5 0 0 1 4.98 3h6.04a1.5 1.5 0 0 1 1.17.563l3.7 4.625A.5.5 0 0 1 16 8.5V13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13V8.5a.5.5 0 0 1 .19-.38l3.7-4.6241zM1 8.5v4.5a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V8.5q-.245.045-.5.05H10.51a2.5 2.5 0 1 1-5 0H1.49c-.161 0-.32-.016-.49-.05z"/></svg><br>
+                        No history found. Start your first analysis!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination pagination-glass justify-content-center border-0 mb-0">
+            {% if readings.has_prev %}
+            <li class="page-item">
+                <a class="page-link rounded-start" href="{{ url_for('main.history', page=readings.prev_num) }}">Previous</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link rounded-start">Previous</span>
+            </li>
+            {% endif %} 
+            
+            {% for page_num in readings.iter_pages() %} 
+                {% if page_num %} 
+                    {% if page_num == readings.page %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('main.history', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                    {% endif %} 
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link bg-transparent text-muted border-0">...</span></li>
+                {% endif %} 
+            {% endfor %} 
+            
+            {% if readings.has_next %}
+            <li class="page-item">
+                <a class="page-link rounded-end" href="{{ url_for('main.history', page=readings.next_num) }}">Next</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link rounded-end">Next</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}
